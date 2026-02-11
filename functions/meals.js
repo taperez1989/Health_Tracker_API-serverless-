@@ -1,9 +1,9 @@
 import { PutItemCommand } from "@aws-sdk/client-dynamodb";
-import { client, TABLE_NAME } from "../db/dynamoClient.js";
+import { client, TABLE_NAME } from "../utils/db.js";
 import { ScanCommand } from "@aws-sdk/client-dynamodb";
 
 export async function addMeal(event) {
-
+// parse
     // if the payload is a string or an object it converts it so that it can be read otherwise it returns an empty object and error code
     let payload;
 
@@ -16,7 +16,7 @@ export async function addMeal(event) {
     }
 
     const { name, calories } = payload;
-
+// validate
     if (
         typeof calories !== "number" ||
         calories < 0 ||
@@ -38,8 +38,8 @@ export async function addMeal(event) {
     const params = {
         TableName: TABLE_NAME,
         Item: {
-            pk: { S: "MEAL" },
-            sk: { S: id },
+            id: { S: id },
+            type: { S: "meal"},
             name: { S: name },
             calories: { N: String(calories) },
             timestamp: { S: timestamp },
