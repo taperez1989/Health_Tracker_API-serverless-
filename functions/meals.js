@@ -1,6 +1,6 @@
 import { PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { client, TABLE_NAME } from "../utils/db.js";
-import { ScanCommand } from "@aws-sdk/client-dynamodb";
+import { scanByType } from "../utils/dbhelpers.js";
 
 export async function addMeal(event) {
 // parse
@@ -60,14 +60,10 @@ export async function addMeal(event) {
 
 export async function getMeals(event) {
     try {
-        const result = await client.send(
-            new ScanCommand({
-                TableName: TABLE_NAME,
-            })
-        );
+        const items = await scanByType("meals");
 
         // convert DynamoDB attribute format -> plain JS
-        const meals = (result.Items || []).map((item) => ({
+        const meals = items.map((item) => ({
             id: item.id?.S,
             type: item.type?.S,
             name: item.name?.S,
